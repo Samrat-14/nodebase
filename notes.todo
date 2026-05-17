@@ -6,4 +6,8 @@ STEPS:
 - npx prisma studio
 
 TODO:
-- [ ] Change metadata, theme
+- [ ] Update metadata, theme
+
+FEATURES:
+- tRPC as Data Access Layer
+- tRPC server + client prefetch for faster load time
