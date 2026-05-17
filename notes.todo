@@ -1,5 +1,5 @@
-YT TIMESTAMP:
-- 0.00.00
+YT LAST TIMESTAMP:
+- 1.35.40
 
 STEPS:
 - npm run dev
@@ -9,5 +9,6 @@ TODO:
 - [ ] Update metadata, theme
 
 FEATURES:
+- stack -> prisma, tRPC, better_auth, inngest, polar, sentry
 - tRPC as Data Access Layer
-- tRPC server + client prefetch for faster load time
+- tRPC server + client prefetch for faster initial load (performance boost)
