@@ -4,9 +4,5 @@ import { requireUnAuth } from '@/lib/auth-utils';
 export default async function RegisterPage() {
   await requireUnAuth();
 
-  return (
-    <div>
-      <RegisterForm />
-    </div>
-  );
+  return <RegisterForm />;
 }
