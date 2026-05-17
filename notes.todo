@@ -3,6 +3,7 @@ YT TIMESTAMP:
 
 STEPS:
 - npm run dev
+- npx prisma studio
 
 TODO:
 - [ ] Change metadata, theme
