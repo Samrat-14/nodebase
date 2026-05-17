@@ -10,6 +10,6 @@ TODO:
 - [ ] Update metadata, theme
 
 FEATURES:
-- stack -> prisma, tRPC, better_auth, inngest, polar, sentry
+- stack -> prisma, tRPC, better_auth, inngest, ai_sdk, sentry, polar
 - tRPC as Data Access Layer
 - tRPC server + client prefetch for faster initial load (performance boost)
