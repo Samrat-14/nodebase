@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address'),
@@ -84,7 +85,7 @@ export function LoginForm() {
                         {...field}
                         id={field.name}
                         aria-invalid={fieldState.invalid}
-                        autoComplete="off"
+                        autoComplete="on"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -109,7 +110,14 @@ export function LoginForm() {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isPending}>
-                  Login
+                  {isPending ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    'Login'
+                  )}
                 </Button>
               </div>
               <div className="text-center text-small">

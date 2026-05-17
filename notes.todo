@@ -1,9 +1,10 @@
 YT LAST TIMESTAMP:
-- 2.37.26
+- 3.05.00
 
 STEPS:
 - npm run dev
 - npx prisma studio
+- npx run inngest:dev
 
 TODO:
 - [ ] Update metadata, theme

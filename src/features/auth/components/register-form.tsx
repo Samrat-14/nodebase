@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 
 const registerSchema = z
   .object({
@@ -92,7 +93,7 @@ export function RegisterForm() {
                         {...field}
                         id={field.name}
                         aria-invalid={fieldState.invalid}
-                        autoComplete="off"
+                        autoComplete="on"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -135,7 +136,14 @@ export function RegisterForm() {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isPending}>
-                  Register
+                  {isPending ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Registering...
+                    </>
+                  ) : (
+                    'Register'
+                  )}
                 </Button>
               </div>
               <div className="text-center text-small">
