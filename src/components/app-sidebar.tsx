@@ -11,9 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useHasActiveSubscription } from '@/features/subscriptions/hooks/use-subscription';
 import { authClient } from '@/lib/auth-client';
 import {
   CreditCardIcon,
+  ExternalLinkIcon,
   FolderOpenIcon,
   HistoryIcon,
   KeyIcon,
@@ -39,23 +41,27 @@ export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenuItem>
-          <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
-            <Link href="/workflows" prefetch>
-              <Image src="/logo.svg" alt="Nodebase" width={30} height={30} className="h-auto" />
-              <span className="font-semibold text-sm">Nodebase</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
+              <Link href="/workflows" prefetch>
+                <Image src="/logo.svg" alt="Nodebase" width={30} height={30} className="h-auto" />
+                <span className="font-semibold text-sm">Nodebase</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {menuItems.map((group) => (
-            <SidebarGroup key={group.title}>
-              <SidebarGroupContent>
+        {menuItems.map((group) => (
+          <SidebarGroup key={group.title}>
+            <SidebarGroupContent>
+              <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
@@ -71,31 +77,34 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
-        </SidebarMenu>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Upgrade to Pro"
-              className="gap-x-4 h-10 px-4"
-              onClick={() => {}}
-            >
-              <StarIcon className="size-4" />
-              <span>Upgrade to Pro</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {!hasActiveSubscription && !isLoading && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip="Upgrade to Pro"
+                className="gap-x-4 h-10 px-4"
+                onClick={() => authClient.checkout({ slug: 'pro' })}
+              >
+                <StarIcon className="size-4" />
+                <span>Upgrade to Pro</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Billing portal"
               className="gap-x-4 h-10 px-4"
-              onClick={() => {}}
+              onClick={() => authClient.customer.portal()}
             >
               <CreditCardIcon className="size-4" />
               <span>Billing portal</span>
+              <ExternalLinkIcon className="size-4 ms-auto" />
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
