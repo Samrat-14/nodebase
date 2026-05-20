@@ -9,6 +9,7 @@ STEPS:
 TODO:
 - [ ] Update metadata, theme
 - [ ] Sidebar block shadcn
+- [ ] React-flow configs
 
 FEATURES:
 - stack -> prisma, tRPC, better_auth, inngest, ai_sdk, sentry, polar
