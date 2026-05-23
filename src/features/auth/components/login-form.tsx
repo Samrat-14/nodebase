@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import { Loader2 } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address'),
@@ -112,7 +112,7 @@ export function LoginForm() {
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {isPending ? (
                     <>
-                      <Loader2 className="size-4 animate-spin" />
+                      <Loader2Icon className="size-4 animate-spin" />
                       Logging in...
                     </>
                   ) : (
