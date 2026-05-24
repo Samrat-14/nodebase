@@ -9,6 +9,7 @@ export const executeWorkflow = inngest.createFunction(
   {
     id: 'execute-workflow',
     triggers: { event: 'workflows/execute.workflow' },
+    retries: 0, // TODO: Remove in production
   },
   async ({ event, step }) => {
     const workflowId = event.data.workflowId;
@@ -28,6 +29,7 @@ export const executeWorkflow = inngest.createFunction(
 
     // Initialize context with any initial data from the trigger
     let context = event.data.initialData || {};
+
     // Execute each node
     for (const node of sortedNodes) {
       const executor = getExecutor(node.type as NodeType);

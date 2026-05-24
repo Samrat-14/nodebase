@@ -1,13 +1,16 @@
 'use client';
 
+import { memo, useState } from 'react';
+import { GlobeIcon } from 'lucide-react';
+import { useReactFlow, type Node, type NodeProps } from '@xyflow/react';
 import { BaseExecutionNode } from '@/features/executions/components/base-execution-node';
 import {
   HttpRequestDialog,
   type HttpRequestFormValues,
 } from '@/features/executions/components/http-request/dialog';
-import { useReactFlow, type Node, type NodeProps } from '@xyflow/react';
-import { GlobeIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { useNodeStatus } from '@/features/executions/hooks/use-node-status';
+import { HTTP_REQUEST_CHANNEL_NAME } from '@/inngest/channels/http-request';
+import { fetchHttpRequestRealtimeToken } from '@/features/executions/components/http-request/actions';
 
 type HttpRequestNodeData = {
   variableName?: string;
@@ -22,7 +25,12 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
-  const nodeStatus = 'initial';
+  const nodeStatus = useNodeStatus({
+    nodeId: props.id,
+    channel: HTTP_REQUEST_CHANNEL_NAME,
+    topic: 'status',
+    refreshToken: fetchHttpRequestRealtimeToken,
+  });
 
   const handleOpenSettings = () => setDialogOpen(true);
 
