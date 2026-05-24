@@ -1,5 +1,5 @@
 YT LAST TIMESTAMP:
-- 11.05.50
+- 1.29.55
 
 STEPS:
 - npm run dev
@@ -10,6 +10,8 @@ TODO:
 - [ ] Update metadata, theme
 - [ ] Sidebar block shadcn
 - [ ] React-flow configs
+- [ ] Make dialog modal scrollable
+- [ ] Improve json templates
 
 FEATURES:
 - stack -> prisma, tRPC, better_auth, inngest, ai_sdk, sentry, polar
