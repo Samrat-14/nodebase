@@ -12,6 +12,8 @@ TODO:
 - [ ] React-flow configs
 - [ ] Make dialog modal scrollable
 - [ ] Improve json templates
+- [ ] Provide suggestions for variable in templates
+- [ ] Improve validation for google form trigger
 
 FEATURES:
 - stack -> prisma, tRPC, better_auth, inngest, ai_sdk, sentry, polar
