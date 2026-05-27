@@ -24,6 +24,14 @@ import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 
+export const AVAILABLE_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-001',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-pro',
+] as const;
+
 const formSchema = z.object({
   variableName: z
     .string()
@@ -32,33 +40,33 @@ const formSchema = z.object({
       message:
         'Variable name must start with a letter or underscore and contain only letters, numbers and underscores',
     }),
-  endpoint: z.string().min(1, { message: 'Please enter a valid URL' }),
-  method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
-  body: z.string().optional(),
+  model: z.enum(AVAILABLE_MODELS),
+  systemPrompt: z.string().optional(),
+  userPrompt: z.string().min(1, { message: 'User prompt is required' }),
 });
 
-export type HttpRequestFormValues = z.infer<typeof formSchema>;
+export type GeminiFormValues = z.infer<typeof formSchema>;
 
-interface HttpRequestDialogProps {
+interface GeminiDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<HttpRequestFormValues>;
+  defaultValues?: Partial<GeminiFormValues>;
 }
 
-export function HttpRequestDialog({
+export function GeminiDialog({
   open,
   onOpenChange,
   onSubmit,
   defaultValues = {},
-}: HttpRequestDialogProps) {
+}: GeminiDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName || '',
-      endpoint: defaultValues.endpoint || '',
-      method: defaultValues.method || 'GET',
-      body: defaultValues.body || '',
+      model: defaultValues.model || AVAILABLE_MODELS[0],
+      systemPrompt: defaultValues.systemPrompt || '',
+      userPrompt: defaultValues.userPrompt || '',
     },
   });
 
@@ -66,16 +74,14 @@ export function HttpRequestDialog({
     if (open) {
       form.reset({
         variableName: defaultValues.variableName || '',
-        endpoint: defaultValues.endpoint || '',
-        method: defaultValues.method || 'GET',
-        body: defaultValues.body || '',
+        model: defaultValues.model || AVAILABLE_MODELS[0],
+        systemPrompt: defaultValues.systemPrompt || '',
+        userPrompt: defaultValues.userPrompt || '',
       });
     }
   }, [open, defaultValues, form]);
 
-  const watchVariableName = form.watch('variableName') || 'http_request_node';
-  const watchMethod = form.watch('method');
-  const showBodyField = ['POST', 'PUT', 'PATCH'].includes(watchMethod);
+  const watchVariableName = form.watch('variableName') || 'gemini_node';
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
@@ -86,8 +92,8 @@ export function HttpRequestDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>HTTP Request Configuration</DialogTitle>
-          <DialogDescription>Configure the settings for HTTP Request node.</DialogDescription>
+          <DialogTitle>Gemini Configuration</DialogTitle>
+          <DialogDescription>Configure the AI model and prompts for this node.</DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 mt-4">
           <Controller
@@ -96,85 +102,78 @@ export function HttpRequestDialog({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Variable Name</FieldLabel>
-                <Input
-                  placeholder="http_request_node"
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                />
+                <Input placeholder="gemini_node" {...field} aria-invalid={fieldState.invalid} />
                 <FieldDescription>
                   Use this name to reference the result in other nodes:{' '}
-                  {`{{${watchVariableName}.httpResponse.data}}`}
+                  {`{{${watchVariableName}.aiResponse}}`}
                 </FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
           <Controller
-            name="method"
+            name="model"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Method</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Model</FieldLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <SelectTrigger aria-invalid={fieldState.invalid} className="w-full">
-                    <SelectValue placeholder="Select a method" />
+                    <SelectValue placeholder="Select a model" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="GET">GET</SelectItem>
-                    <SelectItem value="POST">POST</SelectItem>
-                    <SelectItem value="PUT">PUT</SelectItem>
-                    <SelectItem value="PATCH">PATCH</SelectItem>
-                    <SelectItem value="DELETE">DELETE</SelectItem>
+                    {AVAILABLE_MODELS.map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                <FieldDescription>The HTTP method to use for this request</FieldDescription>
+                <FieldDescription>The Google Gemini model to use for completion</FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
           <Controller
-            name="endpoint"
+            name="systemPrompt"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Endpoint URL</FieldLabel>
-                <Input
-                  placeholder="https://api.example.com/users/{{httpResponse.data.id}}"
+                <FieldLabel htmlFor={field.name}>System Prompt (Optional)</FieldLabel>
+                <Textarea
                   {...field}
                   aria-invalid={fieldState.invalid}
+                  placeholder="You are a helpful assistant."
+                  className="min-h-[80px] font-mono text-sm"
                 />
                 <FieldDescription>
-                  Static URL or use {'{{variables}}'} for simple values or {'{{json variable}}'} to
-                  stringify objects
+                  Sets the behavior of the assistant. Use {'{{variables}}'} for simple values or{' '}
+                  {'{{json variable}}'} to stringify objects
                 </FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
-          {showBodyField && (
-            <Controller
-              name="body"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Request Body</FieldLabel>
-                  <Textarea
-                    {...field}
-                    aria-invalid={fieldState.invalid}
-                    placeholder={
-                      '{\n  "userId": "{{httpResponse.data.id}}",\n  "name": "{{httpsResponse.data.name}}",\n  "items": "{{httpResponse.data.items}}"\n}'
-                    }
-                    className="min-h-[120px] font-mono text-sm"
-                  />
-                  <FieldDescription>
-                    JSON with template variables.Use {'{{variables}}'} for simple values or{' '}
-                    {'{{json variable}}'} to stringify objects
-                  </FieldDescription>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          )}
+          <Controller
+            name="userPrompt"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>User Prompt</FieldLabel>
+                <Textarea
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Summarize this text: {{json httpResponse.data}}"
+                  className="min-h-[120px] font-mono text-sm"
+                />
+                <FieldDescription>
+                  The prompt to send to the AI. Use {'{{variables}}'} for simple values or{' '}
+                  {'{{json variable}}'} to stringify objects
+                </FieldDescription>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
           <DialogFooter className="mt-4">
             <Button type="submit">Save</Button>
           </DialogFooter>

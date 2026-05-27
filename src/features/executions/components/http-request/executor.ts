@@ -37,7 +37,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
           httpRequestChannel.status,
           { nodeId, status: 'error' },
         );
-        throw new NonRetriableError('HTTP Request node: No variable name configured');
+        throw new NonRetriableError('HTTP Request node: Variable name is missing');
       }
 
       if (!data.endpoint) {
@@ -46,7 +46,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
           httpRequestChannel.status,
           { nodeId, status: 'error' },
         );
-        throw new NonRetriableError('HTTP Request node: No endpoint configured');
+        throw new NonRetriableError('HTTP Request node: Endpoint is missing');
       }
 
       if (!data.method) {
@@ -55,7 +55,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
           httpRequestChannel.status,
           { nodeId, status: 'error' },
         );
-        throw new NonRetriableError('HTTP Request node: No method configured');
+        throw new NonRetriableError('HTTP Request node: Method is missing');
       }
 
       const endpoint = Handlebars.compile(data.endpoint)(context);

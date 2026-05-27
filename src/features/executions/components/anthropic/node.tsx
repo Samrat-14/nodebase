@@ -1,40 +1,40 @@
 'use client';
 
 import { memo, useState } from 'react';
-import { GlobeIcon } from 'lucide-react';
 import { useReactFlow, type Node, type NodeProps } from '@xyflow/react';
 import { BaseExecutionNode } from '@/features/executions/components/base-execution-node';
 import { useNodeStatus } from '@/features/executions/hooks/use-node-status';
 import {
-  HttpRequestDialog,
-  type HttpRequestFormValues,
-} from '@/features/executions/components/http-request/dialog';
-import { HTTP_REQUEST_CHANNEL_NAME } from '@/inngest/channels/http-request';
-import { fetchHttpRequestRealtimeToken } from '@/features/executions/components/http-request/actions';
+  AnthropicDialog,
+  type AnthropicFormValues,
+  AVAILABLE_MODELS,
+} from '@/features/executions/components/anthropic/dialog';
+import { ANTHROPIC_CHANNEL_NAME } from '@/inngest/channels/anthropic';
+import { fetchAnthropicRealtimeToken } from '@/features/executions/components/anthropic/actions';
 
-type HttpRequestNodeData = {
+type AnthropicNodeData = {
   variableName?: string;
-  endpoint?: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  body?: string;
+  model?: (typeof AVAILABLE_MODELS)[number];
+  systemPrompt?: string;
+  userPrompt?: string;
 };
 
-type HttpRequestNodeType = Node<HttpRequestNodeData>;
+type AnthropicNodeType = Node<AnthropicNodeData>;
 
-export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
+export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
-    channel: HTTP_REQUEST_CHANNEL_NAME,
+    channel: ANTHROPIC_CHANNEL_NAME,
     topic: 'status',
-    refreshToken: fetchHttpRequestRealtimeToken,
+    refreshToken: fetchAnthropicRealtimeToken,
   });
 
   const handleOpenSettings = () => setDialogOpen(true);
 
-  const handleSubmit = (values: HttpRequestFormValues) => {
+  const handleSubmit = (values: AnthropicFormValues) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === props.id) {
@@ -52,13 +52,13 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
   };
 
   const nodeData = props.data;
-  const description = nodeData?.endpoint
-    ? `${nodeData.method || 'GET'}: ${nodeData.endpoint}`
+  const description = nodeData?.userPrompt
+    ? `${nodeData.model || AVAILABLE_MODELS[0]}: ${nodeData.userPrompt.slice(0, 50)}...`
     : 'Not configured';
 
   return (
     <>
-      <HttpRequestDialog
+      <AnthropicDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit}
@@ -67,9 +67,9 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
       <BaseExecutionNode
         {...props}
         id={props.id}
-        icon={GlobeIcon}
+        icon="/logos/anthropic.svg"
         status={nodeStatus}
-        name="HTTP Request"
+        name="Anthropic"
         description={description}
         onSettings={handleOpenSettings}
         onDoubleClick={handleOpenSettings}
@@ -78,4 +78,4 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
   );
 });
 
-HttpRequestNode.displayName = 'HttpRequestNode';
+AnthropicNode.displayName = 'AnthropicNode';
