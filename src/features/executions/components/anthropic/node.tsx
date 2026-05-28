@@ -14,6 +14,7 @@ import { fetchAnthropicRealtimeToken } from '@/features/executions/components/an
 
 type AnthropicNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: (typeof AVAILABLE_MODELS)[number];
   systemPrompt?: string;
   userPrompt?: string;

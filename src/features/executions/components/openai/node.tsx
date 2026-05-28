@@ -14,6 +14,7 @@ import { fetchOpenAiRealtimeToken } from '@/features/executions/components/opena
 
 type OpenAiNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: (typeof AVAILABLE_MODELS)[number];
   systemPrompt?: string;
   userPrompt?: string;
