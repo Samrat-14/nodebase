@@ -6,6 +6,7 @@ import type { NodeExecutor } from '@/features/executions/types';
 import { anthropicChannel } from '@/inngest/channels/anthropic';
 import { AVAILABLE_MODELS } from '@/features/executions/components/anthropic/dialog';
 import prisma from '@/lib/db';
+import { decrypt } from '@/lib/encryption';
 
 Handlebars.registerHelper('json', (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -82,7 +83,7 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   }
 
   const anthropic = createAnthropic({
-    apiKey: credential.value,
+    apiKey: decrypt(credential.value),
   });
 
   try {
