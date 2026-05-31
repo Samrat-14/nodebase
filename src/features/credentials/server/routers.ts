@@ -1,10 +1,8 @@
 import z from 'zod';
-import { generateSlug } from 'random-word-slugs';
 import prisma from '@/lib/db';
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from '@/trpc/init';
 import { PAGINATION } from '@/config/constants';
-import { CredentialType, NodeType } from '@/generated/prisma/enums';
-import type { Node, Edge } from '@xyflow/react';
+import { CredentialType } from '@/generated/prisma/enums';
 
 export const credentialsRouter = createTRPCRouter({
   create: premiumProcedure
